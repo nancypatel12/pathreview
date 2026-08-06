@@ -2,6 +2,21 @@
 
 import pytest
 
+# Ensure structlog is configured to route through the standard library logging
+# so pytest's caplog can capture messages emitted via structlog.
+from core.logging import configure_logging
+
+
+@pytest.fixture(scope="session", autouse=True)
+def enable_structlog_logging():
+    """Session-scoped autouse fixture to configure structlog for tests.
+
+    This sets up structlog to use the stdlib LoggerFactory and configures
+    the root logging handler so pytest.caplog can capture emitted messages.
+    """
+    configure_logging()
+    yield
+
 
 @pytest.fixture
 def sample_resume_text() -> str:
